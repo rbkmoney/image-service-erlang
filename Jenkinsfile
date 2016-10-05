@@ -1,6 +1,6 @@
 #!groovy
 
-build('erlang-service-template', 'docker-host') {
+build('image-service-erlang', 'docker-host') {
   checkoutRepo()
   loadBuildUtils()
 
