@@ -6,7 +6,7 @@ SERVICE_IMAGE_TAG ?= $(shell git rev-parse HEAD)
 SERVICE_IMAGE_PUSH_TAG ?= $(SERVICE_IMAGE_TAG)
 
 BASE_IMAGE_NAME := base
-BASE_IMAGE_TAG := 3610f8eeb453a0e891aa271b48b7ec533b764fdc
+BASE_IMAGE_TAG := a4fe78426b08c508da7f2e7a086fb801daff0def
 
 -include $(UTILS_PATH)/make_lib/utils_image.mk
 
