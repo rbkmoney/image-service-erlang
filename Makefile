@@ -1,21 +1,57 @@
+SERVICE_NAME := service-erlang
+BASE_IMAGE_NAME := embedded-base
+BASE_IMAGE_TAG := 5c18d1014b9de046114a5a6283c3b76ae2512796
+
 UTILS_PATH := build_utils
-TEMPLATES_PATH := .
 
-SERVICE_NAME := service_erlang
-SERVICE_IMAGE_TAG ?= $(shell git rev-parse HEAD)
-SERVICE_IMAGE_PUSH_TAG ?= $(SERVICE_IMAGE_TAG)
+.PHONY: $(SERVICE_NAME) push clean
+$(SERVICE_NAME): .image-tag
 
-BASE_IMAGE_NAME := embedded
-BASE_IMAGE_TAG := 1ea3e0cd914f9cff723b1efafadea935c8a28660
+COMMIT := $(shell git rev-parse HEAD)
+rev = $(shell git rev-parse --abbrev-ref HEAD)
+BRANCH := $(shell \
+if [[ "${rev}" != "HEAD" ]]; then \
+	echo "${rev}" ; \
+elif [ -n "${BRANCH_NAME}" ]; then \
+	echo "${BRANCH_NAME}"; \
+else \
+	echo `git name-rev --name-only HEAD`; \
+fi)
+SERVICE_IMAGE_TAG=$(COMMIT)
+-include $(UTILS_PATH)/make_lib/utils_repo.mk
 
--include $(UTILS_PATH)/make_lib/utils_image.mk
 
-$(SUBTARGETS): %/.git: %
-	git submodule update --init $<
+SUBMODULES := $(UTILS_PATH)
+SUBTARGETS := $(patsubst %,%/.git,$(SUBMODULES))
+
+$(SUBTARGETS):
+	$(eval SSH_PRIVKEY := $(shell echo $(GITHUB_PRIVKEY) | sed -e 's|%|%%|g'))
+	GIT_SSH_COMMAND="$(shell which ssh) -o StrictHostKeyChecking=no -o User=git `[ -n '$(SSH_PRIVKEY)' ] && echo -o IdentityFile='$(SSH_PRIVKEY)'`" \
+	git submodule update --init $(basename $@)
 	touch $@
 
 submodules: $(SUBTARGETS)
 
+Dockerfile: Dockerfile.sh
+	REGISTRY=$(REGISTRY) ORG_NAME=$(ORG_NAME) \
+	BASE_IMAGE_NAME=$(BASE_IMAGE_NAME) BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
+	BASE_IMAGE="$(REGISTRY)/$(ORG_NAME)/$(BASE_IMAGE_NAME):$(BASE_IMAGE_TAG)" \
+	BUILD_IMAGE_TAG=$(BUILD_IMAGE_TAG) \
+	BUILD_IMAGE="$(REGISTRY)/$(ORG_NAME)/build:$(BUILD_IMAGE_TAG)" \
+	COMMIT=$(COMMIT) BRANCH=$(BRANCH) \
+	./Dockerfile.sh > Dockerfile
+
+.image-tag: Dockerfile
+	docker build -t "$(SERVICE_IMAGE_NAME):$(COMMIT)" .
+	echo $(COMMIT) > $@
+
+push:
+	if [ -f .image-tag ]; then $(DOCKER) push "$(SERVICE_IMAGE_NAME):`cat .image-tag`"; \
+	else echo "No .image-tag file. Build the image first"; exit 1; fi
+
 clean:
-	rm Dockerfile
+	if [ -f .image-tag ]; then $(DOCKER) rmi -f "$(SERVICE_IMAGE_NAME):`cat .image-tag`"; fi
+	rm -f .image-tag Dockerfile
+
+
 
