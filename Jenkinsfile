@@ -8,9 +8,6 @@ build('image-service-erlang', 'docker-host') {
     runStage('submodules') {
       sh 'make submodules'
     }
-    runStage('shared repositories update') {
-      sh 'make -j2 repos'
-    }
   }
   withCredentials(
     [[$class: 'FileBinding', credentialsId: 'github-rbkmoney-ci-bot-file', variable: 'GITHUB_PRIVKEY']]) {
