@@ -1,7 +1,6 @@
-# general
 *~
-.tags*
 *.sublime-workspace
 .DS_Store
 Dockerfile
+.image-tag
 

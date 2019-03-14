@@ -1,30 +1,32 @@
 #!groovy
-
+// -*- mode: groovy -*-
 build('image-service-erlang', 'docker-host') {
   checkoutRepo()
-  loadBuildUtils()
-
-  def pipeDefault
-  runStage('load pipeline') {
-    env.JENKINS_LIB = "build_utils/jenkins_lib"
-    pipeDefault = load("${env.JENKINS_LIB}/pipeDefault.groovy")
-  }
-
-  pipeDefault() {
-    runStage('build service_erlang image') {
-      sh "make build_image"
+  withCredentials(
+    [[$class: 'FileBinding', credentialsId: 'github-rbkmoney-ci-bot-file', variable: 'GITHUB_PRIVKEY'],
+     [$class: 'FileBinding', credentialsId: 'bakka-su-rbkmoney-all', variable: 'BAKKA_SU_PRIVKEY']]) {
+    runStage('submodules') {
+      sh 'make submodules'
     }
-    try {
-      if (env.BRANCH_NAME == 'master') {
-        runStage('push service_erlang image') {
-          sh "make push_image"
-        }
+    runStage('shared repositories update') {
+      sh 'make -j2 repos'
+    }
+  }
+  withCredentials(
+    [[$class: 'FileBinding', credentialsId: 'github-rbkmoney-ci-bot-file', variable: 'GITHUB_PRIVKEY']]) {
+    runStage('build image') {
+      sh 'make'
+    }
+  }
+  try {
+    if (env.BRANCH_NAME == 'master') {
+      runStage('push image') {
+        sh 'make push'
       }
-    } finally {
-      runStage('rm local image') {
-        sh 'make rm_local_image'
-      }
+    }
+  } finally {
+    runStage('Clean up') {
+      sh 'make clean'
     }
   }
 }
-
