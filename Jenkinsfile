@@ -2,28 +2,19 @@
 // -*- mode: groovy -*-
 build('image-service-erlang', 'docker-host') {
   checkoutRepo()
-  withCredentials(
-    [[$class: 'FileBinding', credentialsId: 'github-rbkmoney-ci-bot-file', variable: 'GITHUB_PRIVKEY'],
-     [$class: 'FileBinding', credentialsId: 'bakka-su-rbkmoney-all', variable: 'BAKKA_SU_PRIVKEY']]) {
+  withGithubSshCredentials {
     runStage('submodules') {
       sh 'make submodules'
     }
-  }
-  withCredentials(
-    [[$class: 'FileBinding', credentialsId: 'github-rbkmoney-ci-bot-file', variable: 'GITHUB_PRIVKEY']]) {
-    runStage('build image') {
-      sh 'make'
-    }
-  }
-  try {
-    if (env.BRANCH_NAME == 'master') {
-      runStage('push image') {
-        sh 'make push'
+    try {
+      docker.withRegistry('https://dr2.rbkmoney.com/v2/', 'jenkins_harbor') {
+        runStage('build image') { sh 'make' }
+        if (env.BRANCH_NAME == 'master') {
+          runStage('push image') { sh 'make push' }
+        }
       }
-    }
-  } finally {
-    runStage('Clean up') {
-      sh 'make clean'
+    } finally {
+      runStage('Clean up') { sh 'make clean' }
     }
   }
 }
