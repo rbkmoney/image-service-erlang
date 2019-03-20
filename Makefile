@@ -2,6 +2,8 @@ SERVICE_NAME := service-erlang
 BASE_IMAGE_NAME := embedded-base
 BASE_IMAGE_TAG := 449d456df2efc79903b161cf9de7904ee4e6bb89
 
+REGISTRY ?= dr2.rbkmoney.com
+
 UTILS_PATH := build_utils
 
 .PHONY: $(SERVICE_NAME) push clean
