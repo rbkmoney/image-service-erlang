@@ -1,6 +1,6 @@
 SERVICE_NAME := service-erlang
 BASE_IMAGE_NAME := embedded-base
-BASE_IMAGE_TAG := 5c18d1014b9de046114a5a6283c3b76ae2512796
+BASE_IMAGE_TAG := 449d456df2efc79903b161cf9de7904ee4e6bb89
 
 UTILS_PATH := build_utils
 
@@ -52,6 +52,3 @@ push:
 clean:
 	if [ -f .image-tag ]; then $(DOCKER) rmi -f "$(SERVICE_IMAGE_NAME):`cat .image-tag`"; fi
 	rm -f .image-tag Dockerfile
-
-
-
