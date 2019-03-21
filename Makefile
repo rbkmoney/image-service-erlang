@@ -1,6 +1,6 @@
 SERVICE_NAME := service-erlang
 BASE_IMAGE_NAME := embedded-base
-BASE_IMAGE_TAG := 449d456df2efc79903b161cf9de7904ee4e6bb89
+BASE_IMAGE_TAG := 5b03665c38aa0b003306fd6981cfda005de9c444
 
 REGISTRY ?= dr2.rbkmoney.com
 
