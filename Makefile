@@ -1,6 +1,6 @@
 SERVICE_NAME := service-erlang
 BASE_IMAGE_NAME := embedded-base
-BASE_IMAGE_TAG := b4d989a87f36044474a7767fab5d62cbe5e8aebf
+BASE_IMAGE_TAG := 1281fc98eb659348dc9ed031c0781652da65bb35
 
 UTILS_PATH := build_utils
 
