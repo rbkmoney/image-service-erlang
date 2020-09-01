@@ -1,5 +1,5 @@
 SERVICE_NAME := service-erlang
-BASE_IMAGE_NAME := library/erlang:alpine
+BASE_IMAGE_NAME := library/erlang
 BASE_IMAGE_DIGEST := sha256:81150cfe4fd9e1d557661bae5d00fc5d2e604d48f0b9cfa06491767d3aa26de1
 
 UTILS_PATH := build_utils
