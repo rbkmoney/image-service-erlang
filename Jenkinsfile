@@ -8,7 +8,7 @@ build('image-service-erlang', 'docker-host') {
     }
   }
   try {
-    withPrivateRegistry() {
+    docker.withRegistry('https://dr2.rbkmoney.com/v2/', 'jenkins_harbor') {
       runStage('build image') { sh 'make' }
       if (env.BRANCH_NAME == 'master') {
         runStage('push image') { sh 'make push' }
