@@ -8,7 +8,7 @@ LABEL com.rbkmoney.${SERVICE_NAME}.parent=${BASE_IMAGE_NAME}  \
     com.rbkmoney.${SERVICE_NAME}.commit_id=${COMMIT}  \
     com.rbkmoney.${SERVICE_NAME}.commit_number=`git rev-list --count HEAD`
 
-RUN set -xe
+RUN set -xe \
     && apk add --no-cache --virtual .run-deps
         curl
 
