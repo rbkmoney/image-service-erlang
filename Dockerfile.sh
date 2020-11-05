@@ -8,10 +8,15 @@ LABEL com.rbkmoney.${SERVICE_NAME}.parent=${BASE_IMAGE_NAME}  \
     com.rbkmoney.${SERVICE_NAME}.commit_id=${COMMIT}  \
     com.rbkmoney.${SERVICE_NAME}.commit_number=`git rev-list --count HEAD`
 
-RUN set -xe \
-    && apk add --no-cache --virtual .run-deps curl \
-    && rm /var/cache/apk/*
+RUN set -xe \\
+    && apt-get update \\
+    && apt-get install -y --no-install-recommends \\
+        curl ca-certificates \\
 
-CMD ["sh"]
+    # Cleanup
+    && apt-get clean \\
+    && rm -rf /var/lib/apt/lists/*
+
+CMD ["bash"]
 EOF
 
