@@ -1,6 +1,6 @@
 SERVICE_NAME := service-erlang
 BASE_IMAGE_NAME := library/erlang
-BASE_IMAGE_TAG := 23.2.1.0-alpine
+BASE_IMAGE_TAG := 23.2.3.0-alpine
 
 UTILS_PATH := build_utils
 
