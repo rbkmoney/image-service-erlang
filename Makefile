@@ -3,9 +3,6 @@ SERVICE_NAME := service-erlang
 BASE_IMAGE_NAME := library/erlang
 BASE_IMAGE_TAG := 23.2.5.0-alpine
 
-SERVICE_IMAGE_TAG ?= $(shell git rev-parse HEAD)
-SERVICE_IMAGE_PUSH_TAG ?= $(SERVICE_IMAGE_TAG)
-
 UTILS_PATH := build_utils
 TEMPLATES_PATH := .
 
@@ -24,7 +21,10 @@ elif [ -n "${BRANCH_NAME}" ]; then \
 else \
 	echo `git name-rev --name-only HEAD`; \
 fi)
+
 SERVICE_IMAGE_TAG=$(COMMIT)
+SERVICE_IMAGE_PUSH_TAG ?= $(SERVICE_IMAGE_TAG)
+
 -include $(UTILS_PATH)/make_lib/utils_image.mk
 
 $(SUBTARGETS): %/.git: %
