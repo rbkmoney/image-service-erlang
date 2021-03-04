@@ -9,8 +9,10 @@ SERVICE_IMAGE_PUSH_TAG ?= $(SERVICE_IMAGE_TAG)
 UTILS_PATH := build_utils
 TEMPLATES_PATH := .
 
-.PHONY: $(SERVICE_NAME) push clean
-$(SERVICE_NAME): .image-tag
+SUBMODULES = $(UTILS_PATH)
+SUBTARGETS = $(patsubst %,%/.git,$(SUBMODULES))
+
+.PHONY: submodules
 
 COMMIT := $(shell git rev-parse HEAD)
 rev = $(shell git rev-parse --abbrev-ref HEAD)
@@ -24,9 +26,6 @@ else \
 fi)
 SERVICE_IMAGE_TAG=$(COMMIT)
 -include $(UTILS_PATH)/make_lib/utils_image.mk
-
-SUBMODULES := $(UTILS_PATH)
-SUBTARGETS := $(patsubst %,%/.git,$(SUBMODULES))
 
 $(SUBTARGETS): %/.git: %
 	git submodule update --init $<
