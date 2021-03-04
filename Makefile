@@ -1,8 +1,13 @@
 SERVICE_NAME := service-erlang
+
 BASE_IMAGE_NAME := library/erlang
 BASE_IMAGE_TAG := 23.2.5.0-alpine
 
+SERVICE_IMAGE_TAG ?= $(shell git rev-parse HEAD)
+SERVICE_IMAGE_PUSH_TAG ?= $(SERVICE_IMAGE_TAG)
+
 UTILS_PATH := build_utils
+TEMPLATES_PATH := .
 
 .PHONY: $(SERVICE_NAME) push clean
 $(SERVICE_NAME): .image-tag
@@ -18,16 +23,13 @@ else \
 	echo `git name-rev --name-only HEAD`; \
 fi)
 SERVICE_IMAGE_TAG=$(COMMIT)
--include $(UTILS_PATH)/make_lib/utils_repo.mk
-
+-include $(UTILS_PATH)/make_lib/utils_image.mk
 
 SUBMODULES := $(UTILS_PATH)
 SUBTARGETS := $(patsubst %,%/.git,$(SUBMODULES))
 
-$(SUBTARGETS):
-	$(eval SSH_PRIVKEY := $(shell echo $(GITHUB_PRIVKEY) | sed -e 's|%|%%|g'))
-	GIT_SSH_COMMAND="$(shell which ssh) -o StrictHostKeyChecking=no -o User=git `[ -n '$(SSH_PRIVKEY)' ] && echo -o IdentityFile='$(SSH_PRIVKEY)'`" \
-	git submodule update --init $(basename $@)
+$(SUBTARGETS): %/.git: %
+	git submodule update --init $<
 	touch $@
 
 submodules: $(SUBTARGETS)
@@ -38,15 +40,3 @@ Dockerfile: Dockerfile.sh
 	BASE_IMAGE="$(BASE_IMAGE_NAME):$(BASE_IMAGE_TAG)" \
 	COMMIT=$(COMMIT) BRANCH=$(BRANCH) \
 	./Dockerfile.sh > Dockerfile
-
-.image-tag: Dockerfile
-	docker build -t "$(SERVICE_IMAGE_NAME):$(COMMIT)" .
-	echo $(COMMIT) > $@
-
-push:
-	if [ -f .image-tag ]; then $(DOCKER) push "$(SERVICE_IMAGE_NAME):`cat .image-tag`"; \
-	else echo "No .image-tag file. Build the image first"; exit 1; fi
-
-clean:
-	if [ -f .image-tag ]; then $(DOCKER) rmi -f "$(SERVICE_IMAGE_NAME):`cat .image-tag`"; fi
-	rm -f .image-tag Dockerfile
