@@ -34,25 +34,13 @@ $(SUBTARGETS): %/.git: %
 
 submodules: $(SUBTARGETS)
 
-Dockerfile: Dockerfile.sh
+erlang.cfg: erlang.cfg.sh
+	ERLANG_VERSION=${ERLANG_VERSION} \
+	./erlang.cfg.sh > erlang.cfg
+
+Dockerfile: erlang.cfg Dockerfile.sh
 	REGISTRY=$(REGISTRY) ORG_NAME=$(ORG_NAME) \
 	BASE_IMAGE_NAME=$(BASE_IMAGE_NAME) BASE_IMAGE_TAG=$(BASE_IMAGE_TAG) \
 	BASE_IMAGE="$(BASE_IMAGE_NAME):$(BASE_IMAGE_TAG)" \
 	COMMIT=$(COMMIT) BRANCH=$(BRANCH) \
 	./Dockerfile.sh > Dockerfile
-
-erlang.cfg: erlang.cfg.sh
-	ERLANG_VERSION=${ERLANG_VERSION} \
-	./erlang.cfg.sh > erlang.cfg
-
-.image-tag: Dockerfile erlang.cfg
-	docker build -t "$(SERVICE_IMAGE_NAME):$(COMMIT)" .
-	echo $(COMMIT) > $@
-
-push:
-	if [ -f .image-tag ]; then $(DOCKER) push "$(SERVICE_IMAGE_NAME):`cat .image-tag`"; \
-	else echo "No .image-tag file. Build the image first"; exit 1; fi
-
-clean:
-	if [ -f .image-tag ]; then $(DOCKER) rmi -f "$(SERVICE_IMAGE_NAME):`cat .image-tag`"; fi
-	rm -f .image-tag Dockerfile erlang.cfg
