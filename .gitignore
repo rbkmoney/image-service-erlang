@@ -2,5 +2,6 @@
 *.sublime-workspace
 .DS_Store
 Dockerfile
+erlang.cfg
 .image-tag
 
