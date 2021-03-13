@@ -22,6 +22,8 @@ RUN set -xe \
     && apt-get purge -y --auto-remove equivs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/erlang.cfg /tmp/erlang*.deb
+    && echo "dash dash/sh boolean false" | debconf-set-selections \
+    && DEBIAN_FRONTEND=noninteractive dpkg-reconfigure dash
 
 CMD ["bash"]
 EOF
