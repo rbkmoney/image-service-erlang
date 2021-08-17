@@ -7,17 +7,18 @@ build('image-service-erlang', 'docker-host') {
       sh 'make submodules'
     }
   }
-  try {
-      withPublicRegistry() {
-        runStage('build image') { sh 'make build_image' }
-      }
-        if (env.BRANCH_NAME == 'master') {
-          withPrivateRegistry() {
-          runStage('push image') { sh 'make push_image' }
-          }
-        }
+  withPublicRegistry() {
+    withPrivateRegistry() {
+      runStage('build image') { sh 'make build_image' }
     }
-  finally {
+  }
+  try {
+    if (env.BRANCH_NAME == 'master') {
+      withPrivateRegistry() {
+        runStage('push image') { sh 'make push_image' }
+      }
+    }
+  } finally {
     runStage('Clean up') { sh 'make rm_local_image' }
   }
 }
