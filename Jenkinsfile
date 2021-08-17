@@ -9,7 +9,7 @@ build('image-service-erlang', 'docker-host') {
   }
   try {
       withPublicRegistry() {
-        runStage('build image') { sh 'make build_image' }
+        runStage('build image') { sh 'REGISTRY=dr2.rbkmoney.com make build_image' }
       }
         if (env.BRANCH_NAME == 'master') {
           withPrivateRegistry() {
