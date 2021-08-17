@@ -8,15 +8,16 @@ build('image-service-erlang', 'docker-host') {
     }
   }
   try {
-    withPublicRegistry() {
-      withPrivateRegistry() {
+      withPublicRegistry() {
         runStage('build image') { sh 'make build_image' }
-        if (env.BRANCH_NAME == 'master') {
-          runStage('push image') { sh 'make push_image' }
-        }
       }
+        if (env.BRANCH_NAME == 'master') {
+          withPrivateRegistry() {
+          runStage('push image') { sh 'make push_image' }
+          }
+        }
     }
-  } finally {
+  finally {
     runStage('Clean up') { sh 'make rm_local_image' }
   }
 }
