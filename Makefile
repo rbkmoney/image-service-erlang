@@ -1,7 +1,7 @@
 SERVICE_NAME := service-erlang
 
 BASE_IMAGE_NAME := library/erlang
-BASE_IMAGE_TAG := 23.3.4.3-slim
+BASE_IMAGE_TAG := 24.0.5.0-slim
 ERLANG_VERSION := $(subst  -slim,,${BASE_IMAGE_TAG})
 
 UTILS_PATH := build_utils
