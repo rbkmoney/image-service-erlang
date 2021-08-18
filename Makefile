@@ -6,7 +6,7 @@ BASE_IMAGE_NAME := library/erlang
 BASE_IMAGE_TAG := 24.0.5.0-slim
 ERLANG_VERSION := $(subst  -slim,,${BASE_IMAGE_TAG})
 
-REGISTRY := dr2.rbkmoney.com
+REGISTRY ?= dr2.rbkmoney.com
 DOCKER ?= docker
 DOCKER_BUILD_OPTIONS ?=
 
