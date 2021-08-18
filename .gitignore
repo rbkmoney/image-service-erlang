@@ -4,4 +4,5 @@
 Dockerfile
 erlang.cfg
 .image-tag
+.state
 
