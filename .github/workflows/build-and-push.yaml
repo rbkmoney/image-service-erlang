@@ -33,10 +33,8 @@ jobs:
         # of authentication is the PAT.
         # See https://docs.github.com/en/packages/guides/pushing-and-pulling-docker-images for details
         password: ${{ secrets.CR_PAT }}
-    - name: Initialize build-utils
-      run: make submodules
     - name: Build image
-      run: make build_image
+      run: make service-erlang
       env:
         ORG_NAME: ${{ github.repository_owner }}
         REGISTRY: ghcr.io
