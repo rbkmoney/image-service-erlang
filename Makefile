@@ -3,7 +3,7 @@ ORG_NAME ?= rbkmoney
 SERVICE_IMAGE_NAME ?= $(ORG_NAME)/$(SERVICE_NAME)
 
 BASE_IMAGE_NAME := library/erlang
-BASE_IMAGE_TAG := 24.1.3.0-slim
+BASE_IMAGE_TAG := 24.1.5.0-slim
 ERLANG_VERSION := $(subst  -slim,,${BASE_IMAGE_TAG})
 
 REGISTRY ?= dr2.rbkmoney.com
